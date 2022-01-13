@@ -218,8 +218,6 @@ num_tokens = st.sidebar.number_input('Number of tokens to model', value=650000)
 
 principals = st.sidebar.multiselect('Loan Principal Amount(s)', options=list(range(100000, 30000000, 100000)))
 
-bc_share = st.sidebar.multiselect('Blockchain Share of Residual Profits', options=list(np.round(np.arange(0.01, .99, .01))))
-
 num_sims = st.sidebar.number_input('Number of Simulations', value=5)    
 
 start = st.button('Compute Scenario(s)')
