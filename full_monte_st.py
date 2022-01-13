@@ -132,7 +132,7 @@ def gen_df(days, rfr, coupon, start_price, vol, num_tokens, principal, bc_share)
     return30d = round((df.iloc[30].token_price - start_price)/start_price*100, 2)
     total_sales = np.dot(df.token_price, df.tokens_sold)
     loan_df_sales = np.dot(loan_df.token_price, loan_df.tokens_sold)
-    sales_diff = total_sales-loan_df_sales
+    sales_diff = max(total_sales-principal, 0)
     interest = np.nansum(loan_df.accrued_interest)
     
     if len(loan_df) < days:
@@ -141,7 +141,7 @@ def gen_df(days, rfr, coupon, start_price, vol, num_tokens, principal, bc_share)
         rebate = 0 
     
    
-    profit = loan_df_sales+sales_diff*bc_share-funding_cost-principal+interest+rebate*bc_share-rebate
+    profit = sales_diff*bc_share-funding_cost+interest
     if profit < 0:
         default = True
         loss = profit
