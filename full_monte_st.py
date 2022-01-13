@@ -247,18 +247,22 @@ if start:
                 price_df = price_df.append(results[0])
                 
             all_results = all_results.append(new)
+            defaulted = new.loc[new.Loss_Given_Default < 0].Loss_Given_Default
+            if len(defaulted) == 0:
+                defaulted = np.array([0, 0, 0, 0, 0, 0 ])
             analysis = pd.DataFrame.from_dict({'Loan_Maturity_Days':[new['Loan_Maturity_Days'].mean(), new['Loan_Maturity_Days'].min(),new['Loan_Maturity_Days'].max(), np.percentile(new['Loan_Maturity_Days'],5), np.percentile(new['Loan_Maturity_Days'],95), new['Loan_Maturity_Days'].std()], 
                                        'Residual_Post_Waterfall':[new['Residual'].mean(), new['Residual'].min(),new['Residual'].max(), np.percentile(new['Residual'],5), np.percentile(new['Residual'],95), new['Residual'].std()], 
                                        'Interest':[new['Interest'].mean(), new['Interest'].min(),new['Interest'].max(), np.percentile(new['Interest'],5), np.percentile(new['Interest'],95), new['Interest'].std()], 
                                        'Asset_Coverage':[new['Asset_Coverage'].mean(), new['Asset_Coverage'].min(),new['Asset_Coverage'].max(), np.percentile(new['Asset_Coverage'],5), np.percentile(new['Asset_Coverage'],95), new['Asset_Coverage'].std()],
                                        'Probability_Of_Default':[new.Default.sum()/len(new)],
-                                       'Loss_Given_Default':[new.loc[new['Loss_Given_Default'] < 0]['Loss_Given_Default'].mean(), new.loc[new['Loss_Given_Default'] < 0]['Loss_Given_Default'].min(),new.loc[new['Loss_Given_Default'] < 0]['Loss_Given_Default'].max(), np.percentile(new.loc[new['Loss_Given_Default'] < 0]['Loss_Given_Default'],5), np.percentile(new.loc[new['Loss_Given_Default'] < 0]['Loss_Given_Default'],95), new.loc[new['Loss_Given_Default'] < 0]['Loss_Given_Default'].std()],
+                                       'LGD':[defaulted.mean(), defaulted.min(), defaulted.max(), np.percentile(defaulted, 5), np.percentile(defaulted, 95), defaulted.std()],
                                        '{}_Average_Price'.format(asset):[new['Average_Token_Price'].mean(), new['Average_Token_Price'].min(),new['Average_Token_Price'].max(), np.percentile(new['Average_Token_Price'],5), np.percentile(new['Average_Token_Price'],95), new['Average_Token_Price'].std()],
                                        '{}_Min_Price'.format(asset):[new['Min_Price'].mean(), new['Min_Price'].min(),new['Min_Price'].max(), np.percentile(new['Min_Price'],5), np.percentile(new['Min_Price'],95), new['Min_Price'].std()], 
                                        '{}_Max_Price'.format(asset):[new['Max_Price'].mean(), new['Max_Price'].min(),new['Max_Price'].max(), np.percentile(new['Max_Price'],5), np.percentile(new['Max_Price'],95), new['Max_Price'].std()],
                                        'Funding_Cost':[new['Interest'].mean(), new['Interest'].min(),new['Interest'].max(), np.percentile(new['Interest'],5), np.percentile(new['Interest'],95), new['Interest'].std()], 
                                        'Profit':[new['Profit'].mean(), new['Profit'].min(),new['Profit'].max(), np.percentile(new['Profit'],5), np.percentile(new['Profit'],95), new['Profit'].std()]},
                                         orient='index', columns=['Average', 'Min', 'Max', '5th_p', '95th_p', 'Std'])
+
             analyses[args] = analysis
             st.write(args)
             st.write('(days, rfr, coupon, start price, vol, number of tokens, BC share of resid)')
